@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CPU状态演示</title>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@4.8.0/dist/echarts.min.js"></script>
+</head>
+<body>
+<h2 style="text-align: center;">CPU使用率</h2>
+<div id="chart" style="height: 600px; width: 100%;"></div>
+<script>
+    const socket = io({
+        path: '/ws'
+    });
+
+    const chart = echarts.init(document.querySelector('#chart'));
+
+    let data = [];
+
+    socket.on('CPU_STATUS', (msg) => {
+        data = data.concat(JSON.parse(msg));
+
+        chart.setOption({
+            yAxis: {
+                type: 'value',
+                max: 100,
+                min: 0
+            },
+            xAxis: {
+                type: 'category',
+                data: data.map(item => new Date(item.time).toLocaleTimeString())
+            },
+            series: [
+                {
+                    type: 'line',
+                    data: data.map(item => item.percent)
+                }
+            ]
+        })
+    })
+</script>
+</body>
+</html>

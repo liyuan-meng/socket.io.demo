@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket 讲解</title>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+        body {
+            flex-direction: column;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.js"></script>
+    <script>
+        let socket = null;
+
+        function connect() {
+            socket = io(document.querySelector('#location').value, {
+                path: document.querySelector('#path').value
+            });
+            document.querySelector('#content').innerHTML += '连接成功\n';
+
+            socket.on('server_message', (msg) => {
+                document.querySelector('#content').innerHTML += msg
+            })
+        }
+
+        function send(msg) {
+            socket.emit('client_message', document.querySelector('#message').value);
+        }
+    </script>
+</head>
+<body style="display: flex;">
+<div style="padding: 0 15px;">
+    <h3>Socket.IO</h3>
+    <div>
+        <label for="location">地址</label>
+        <input id="location" value="http://localhost:8088">
+        <label for="path">路径</label>
+        <input id="path" value="/ws">
+        <button onclick="connect()" style="margin-right: 100px;">连接</button>
+        <input id="message" value="ifconfig" />
+        <button onclick="send()">发送</button>
+    </div>
+</div>
+<hr>
+<pre id="content" style="flex: 1; overflow: auto; background-color: black; color: greenyellow; margin: 0;">
+</pre>
+</body>
+</html>
